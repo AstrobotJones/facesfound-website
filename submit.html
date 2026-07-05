@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Submit an orphaned photograph to the Faces Found collection — help us identify and preserve real people from history." />
+  <title>Submit a Photo — Faces Found</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">Faces <span>Found</span></a>
+      <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="gallery.html">Browse Photos</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="submit.html">Submit a Photo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <h1>Submit a Photo</h1>
+    <p>Share what you know. The community will help figure out the rest.</p>
+  </div>
+
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+
+      <!-- Tips box -->
+      <div style="background: var(--aged-paper); border-left: 3px solid var(--accent); padding: 1.25rem 1.5rem; margin-bottom: 3rem;">
+        <p style="font-family: var(--font-display); color: var(--sepia); font-size: 1.05rem; margin-bottom: 0.5rem;">Tips for a great submission</p>
+        <ul style="color: var(--warm-mid); font-size: 0.9rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem;">
+          <li>Photograph both the <strong>front and back</strong> of the original — writing, stamps, and studio marks on the back are often the best clues.</li>
+          <li>Scan or photograph in good, even light. Avoid shadows across the subject's face.</li>
+          <li>Note exactly <strong>where and when</strong> you found the photograph — this is more useful than you might think.</li>
+          <li>Include any text on the photo or its envelope, exactly as written, even if partial.</li>
+        </ul>
+      </div>
+
+      <!-- Two forms: submit a photo, or submit identification info -->
+      <div style="display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+        <button class="btn btn--primary" id="tab-submit" onclick="showTab('submit')">Submit a new photo</button>
+        <button class="btn btn--outline" id="tab-identify" onclick="showTab('identify')" style="color: var(--warm-mid);">I have information about an existing photo</button>
+      </div>
+
+      <!-- Submit new photo form -->
+      <div id="form-submit">
+        <p class="section__label">New submission</p>
+        <h2 class="section__title" style="font-size: 1.75rem;">Tell us about your photo</h2>
+        <p style="color: var(--warm-mid); margin-bottom: 0.5rem; font-size: 0.9rem;">
+          Fields marked * are required. The more detail you can provide, the better.
+        </p>
+
+        <form id="contact-form">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="name">Your name *</label>
+              <input type="text" id="name" name="name" required placeholder="First and last name" />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Your email *</label>
+              <input type="email" id="email" name="email" required placeholder="you@example.com" />
+            </div>
+
+            <div class="form-group form-group--full">
+              <label for="found-where">Where was the photo found? *</label>
+              <input type="text" id="found-where" name="found-where" required placeholder="e.g. Estate sale in Columbus, Ohio" />
+            </div>
+
+            <div class="form-group">
+              <label for="found-when">Approximately when found?</label>
+              <input type="text" id="found-when" name="found-when" placeholder="e.g. Spring 2024" />
+            </div>
+
+            <div class="form-group">
+              <label for="era">Estimated era of the photo</label>
+              <select id="era" name="era">
+                <option value="">— Select if known —</option>
+                <option>Pre-1900</option>
+                <option>1900–1919</option>
+                <option>1920s</option>
+                <option>1930s</option>
+                <option>1940s</option>
+                <option>1950s</option>
+                <option>1960s</option>
+                <option>1970s</option>
+                <option>1980s or later</option>
+                <option>Unknown</option>
+              </select>
+            </div>
+
+            <div class="form-group form-group--full">
+              <label for="back-text">Text on the back of the photo (copy exactly, typos and all)</label>
+              <textarea id="back-text" name="back-text" placeholder="e.g. 'For Mother, always — Christmas 1943' or 'Becker Studios, Reading PA'"></textarea>
+            </div>
+
+            <div class="form-group form-group--full">
+              <label for="description">Describe what you see in the photo *</label>
+              <textarea id="description" name="description" required style="min-height: 140px;" placeholder="Number of people, approximate ages, clothing, setting, anything notable..."></textarea>
+            </div>
+
+            <div class="form-group form-group--full">
+              <label for="photo-file">Attach your photo file(s)</label>
+              <input type="file" id="photo-file" name="photo-file" accept="image/*" multiple
+                style="padding: 0.5rem; background: var(--aged-paper); border-color: var(--dust);" />
+              <span style="font-size: 0.78rem; color: var(--warm-mid);">JPG, PNG, or TIFF. Include front and back if possible.</span>
+            </div>
+
+            <div class="form-group form-group--full">
+              <label for="notes">Anything else you want us to know?</label>
+              <textarea id="notes" name="notes" placeholder="Additional context, theories, or anything else that might help..."></textarea>
+            </div>
+
+          </div>
+
+          <div style="margin-top: 2rem;">
+            <button type="submit" class="btn btn--primary" style="font-size: 1rem; padding: 0.9rem 2.5rem;">
+              Submit photo
+            </button>
+            <p style="margin-top: 1rem; font-size: 0.82rem; color: var(--warm-mid);">
+              By submitting, you confirm you are the holder of the original photograph
+              and agree to our community guidelines. We'll be in touch within a few days.
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <!-- Identify existing photo form -->
+      <div id="form-identify" style="display: none;">
+        <p class="section__label">Share what you know</p>
+        <h2 class="section__title" style="font-size: 1.75rem;">I recognize someone</h2>
+        <p style="color: var(--warm-mid); margin-bottom: 0.5rem; font-size: 0.9rem;">
+          Even a partial clue can crack a case open. Tell us what you know.
+        </p>
+
+        <form id="identify-form">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="id-name">Your name</label>
+              <input type="text" id="id-name" name="name" placeholder="Optional" />
+            </div>
+
+            <div class="form-group">
+              <label for="id-email">Your email *</label>
+              <input type="email" id="id-email" name="email" required placeholder="So we can follow up" />
+            </div>
+
+            <div class="form-group form-group--full">
+              <label for="photo-ref">Which photo are you writing about? *</label>
+              <input type="text" id="photo-ref" name="photo-ref" required placeholder="Photo title or description — e.g. 'Woman in Sunday Best, c. 1940s'" />
+            </div>
+
+            <div class="form-group form-group--full">
+              <label for="id-info">What do you know? *</label>
+              <textarea id="id-info" name="id-info" required style="min-height: 160px;"
+                placeholder="Share any identification, clues, or theories. Be as specific as you can — names, locations, family connections, dates..."></textarea>
+            </div>
+
+          </div>
+
+          <div style="margin-top: 2rem;">
+            <button type="submit" class="btn btn--primary" style="font-size: 1rem; padding: 0.9rem 2.5rem;">
+              Send information
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="community">
+    <div class="container">
+      <h2>Not ready to submit?</h2>
+      <p>Browse the collection first, or learn more about how Faces Found works.</p>
+      <div class="community__links">
+        <a href="gallery.html" class="btn btn--primary">Browse photos</a>
+        <a href="about.html" class="btn btn--outline">How it works</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <p class="footer__logo">Faces <span>Found</span></p>
+      <p class="footer__tagline">Real faces. Real histories. Found and waiting to be named.</p>
+      <ul class="footer__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="gallery.html">Browse Photos</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="submit.html">Submit a Photo</a></li>
+      </ul>
+      <p class="footer__copy">&copy; 2025 Faces Found. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    function showTab(tab) {
+      const submitForm   = document.getElementById('form-submit');
+      const identifyForm = document.getElementById('form-identify');
+      const tabSubmit    = document.getElementById('tab-submit');
+      const tabIdentify  = document.getElementById('tab-identify');
+
+      if (tab === 'submit') {
+        submitForm.style.display   = 'block';
+        identifyForm.style.display = 'none';
+        tabSubmit.className   = 'btn btn--primary';
+        tabIdentify.className = 'btn btn--outline';
+        tabIdentify.style.color = 'var(--warm-mid)';
+      } else {
+        submitForm.style.display   = 'none';
+        identifyForm.style.display = 'block';
+        tabSubmit.className   = 'btn btn--outline';
+        tabSubmit.style.color = 'var(--warm-mid)';
+        tabIdentify.className = 'btn btn--primary';
+        tabIdentify.style.color = '';
+      }
+    }
+
+    // Handle identify form submission
+    const identifyForm = document.getElementById('identify-form');
+    if (identifyForm) {
+      identifyForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const btn = identifyForm.querySelector('button[type="submit"]');
+        btn.textContent = 'Sent — thank you!';
+        btn.disabled = true;
+        identifyForm.reset();
+      });
+    }
+  </script>
+</body>
+</html>

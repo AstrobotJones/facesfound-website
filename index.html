@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Faces Found — a community for discovering, identifying, and preserving real people in orphaned photographs found at estate sales and antique shops." />
+  <title>Faces Found — Orphaned Photographs, Rediscovered</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">Faces <span>Found</span></a>
+      <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="gallery.html">Browse Photos</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="submit.html">Submit a Photo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <section class="hero" aria-label="Introduction">
+    <div class="hero__inner">
+      <div class="hero__text">
+        <p class="hero__eyebrow">Real faces · Real histories</p>
+        <h1 class="hero__headline">
+          Every face tells<br>a story. Help us<br><em>find theirs.</em>
+        </h1>
+        <p class="hero__body">
+          Faces Found is a community dedicated to discovering, identifying, and
+          preserving the real people in orphaned photographs — photos found at
+          estate sales, antique shops, and flea markets, waiting to be named.
+        </p>
+        <div class="hero__actions">
+          <a href="gallery.html" class="btn btn--primary">Browse the Collection</a>
+          <a href="submit.html" class="btn btn--outline">Share a Photo</a>
+        </div>
+      </div>
+
+      <!-- Signature element: scattered polaroid cluster -->
+      <div class="hero__photos" aria-hidden="true">
+        <div class="hero__photo">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=240&fit=crop&auto=format&q=60" alt="" />
+          <p class="caption">Unknown — c. 1940s</p>
+        </div>
+        <div class="hero__photo">
+          <img src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=300&h=240&fit=crop&auto=format&q=60" alt="" />
+          <p class="caption">Unidentified family</p>
+        </div>
+        <div class="hero__photo">
+          <img src="https://images.unsplash.com/photo-1504198458649-3128b932f49e?w=300&h=240&fit=crop&auto=format&q=60" alt="" />
+          <p class="caption">Found — estate sale</p>
+        </div>
+        <div class="hero__photo">
+          <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=300&h=240&fit=crop&auto=format&q=60" alt="" />
+          <p class="caption">Who is she?</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ── -->
+  <section class="section section--alt">
+    <div class="container">
+      <p class="section__label">How it works</p>
+      <h2 class="section__title">From forgotten box to living memory</h2>
+      <p class="section__sub">
+        Every photograph in our collection was once someone's treasure.
+        Here's how our community brings them back to life.
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step__number">01</div>
+          <h3 class="step__title">Find &amp; Submit</h3>
+          <p class="step__body">
+            Discover an orphaned photo at an estate sale or antique shop?
+            Upload it to Faces Found with whatever details you know — date found,
+            location, any writing on the back.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step__number">02</div>
+          <h3 class="step__title">Browse &amp; Identify</h3>
+          <p class="step__body">
+            Our community of genealogists, historians, and photo enthusiasts
+            searches for clues — clothing, hairstyles, locations, photographer
+            stamps — to name the faces.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step__number">03</div>
+          <h3 class="step__title">Discuss &amp; Connect</h3>
+          <p class="step__body">
+            Share theories, post findings, and connect with others who might
+            recognize a face. Sometimes a single detail unlocks an entire family history.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step__number">04</div>
+          <h3 class="step__title">Preserve &amp; Share</h3>
+          <p class="step__body">
+            Identified or not, every photo finds a home here. Quality copies
+            are available so these images live on — and if a family is found,
+            they can reclaim what was lost.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Recent Photos preview ── -->
+  <section class="section">
+    <div class="container">
+      <p class="section__label">Recently added</p>
+      <h2 class="section__title">Faces waiting to be named</h2>
+      <p class="section__sub">
+        These photographs were recently added to the collection.
+        Do you recognize anyone?
+      </p>
+
+      <div class="gallery-grid" style="margin-top: 2.5rem;">
+
+        <div class="photo-card"
+          data-img="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=450&fit=crop&auto=format&q=70"
+          data-era="c. 1940s"
+          data-title="Woman in Sunday Best"
+          data-location="Unknown"
+          data-found="Ohio estate sale, 2024"
+          data-status="Unidentified"
+          data-category="portrait"
+          data-desc="A formally dressed woman, estimated mid-30s. Photo back reads only 'For Mother, with love.' Photographer stamp is partially legible — possibly a studio in the Midwest."
+          tabindex="0" role="button" aria-label="View photo: Woman in Sunday Best">
+          <img class="photo-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format&q=60" alt="Unidentified woman in formal dress, circa 1940s" />
+          <div class="photo-card__meta">
+            <span class="photo-card__era">c. 1940s</span>
+            <h3 class="photo-card__title">Woman in Sunday Best</h3>
+            <p class="photo-card__location">Found: Ohio estate sale</p>
+            <span class="photo-card__status status--unknown">Unidentified</span>
+          </div>
+        </div>
+
+        <div class="photo-card"
+          data-img="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=600&h=450&fit=crop&auto=format&q=70"
+          data-era="c. 1920s"
+          data-title="Family Portrait, Porch"
+          data-location="Southern US"
+          data-found="Tennessee antique mall, 2023"
+          data-status="Partially identified"
+          data-category="family"
+          data-desc="A family of five on a farmhouse porch. The older man has been tentatively identified as matching the Johnson family of rural Tennessee, but not confirmed. Three children unidentified."
+          tabindex="0" role="button" aria-label="View photo: Family Portrait, Porch">
+          <img class="photo-card__img" src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=300&fit=crop&auto=format&q=60" alt="Family of five on a porch, circa 1920s" />
+          <div class="photo-card__meta">
+            <span class="photo-card__era">c. 1920s</span>
+            <h3 class="photo-card__title">Family Portrait, Porch</h3>
+            <p class="photo-card__location">Found: Tennessee antique mall</p>
+            <span class="photo-card__status status--identified">Partially identified</span>
+          </div>
+        </div>
+
+        <div class="photo-card"
+          data-img="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&h=450&fit=crop&auto=format&q=70"
+          data-era="c. 1955"
+          data-title="Young Woman, Studio Portrait"
+          data-location="Unknown"
+          data-found="Illinois flea market, 2024"
+          data-status="Unidentified"
+          data-category="portrait"
+          data-desc="Professional studio portrait. Subject appears to be late teens or early twenties. Handwritten on back: 'June 1955 — always yours.' No studio mark visible."
+          tabindex="0" role="button" aria-label="View photo: Young Woman, Studio Portrait">
+          <img class="photo-card__img" src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=300&fit=crop&auto=format&q=60" alt="Young woman in studio portrait, circa 1955" />
+          <div class="photo-card__meta">
+            <span class="photo-card__era">c. 1955</span>
+            <h3 class="photo-card__title">Young Woman, Studio Portrait</h3>
+            <p class="photo-card__location">Found: Illinois flea market</p>
+            <span class="photo-card__status status--available">Copy available</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="text-align:center; margin-top: 2.5rem;">
+        <a href="gallery.html" class="btn btn--dark">Browse the full collection</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Community CTA ── -->
+  <div class="community">
+    <div class="container">
+      <h2>Join the community</h2>
+      <p>
+        Connect with fellow photo enthusiasts, genealogists, and historians
+        in our growing social community. Share finds, trade tips, and help
+        put names to faces.
+      </p>
+      <div class="community__links">
+        <a href="#" class="btn btn--primary">Community coming soon</a>
+        <a href="submit.html" class="btn btn--outline">Submit a photo</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer__logo">Faces <span>Found</span></p>
+      <p class="footer__tagline">Real faces. Real histories. Found and waiting to be named.</p>
+      <ul class="footer__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="gallery.html">Browse Photos</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="submit.html">Submit a Photo</a></li>
+      </ul>
+      <p class="footer__copy">&copy; 2025 Faces Found. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ── Photo Modal ── -->
+  <div class="modal-overlay" id="photo-modal" role="dialog" aria-modal="true" aria-label="Photo detail">
+    <div class="modal">
+      <button class="modal__close" aria-label="Close">&times;</button>
+      <img class="modal__img" src="" alt="" />
+      <p class="modal__era"></p>
+      <h2 class="modal__title"></h2>
+      <div class="modal__details">
+        <div class="modal__detail-item"><strong>Location</strong><span id="modal-location"></span></div>
+        <div class="modal__detail-item"><strong>Where Found</strong><span id="modal-found"></span></div>
+        <div class="modal__detail-item"><strong>Status</strong><span id="modal-status"></span></div>
+      </div>
+      <p class="modal__desc"></p>
+      <div class="modal__actions">
+        <a href="submit.html" class="btn btn--primary">Submit information</a>
+        <button class="btn btn--dark" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
