@@ -57,10 +57,10 @@
           Fields marked * are required. The more detail you can provide, the better.
         </p>
 
-        <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="access_key" value="a5db134f-6750-4f6e-9c09-d860ac5555d5" />
+        <form id="contact-form" name="photo-submission" method="POST" enctype="multipart/form-data" data-netlify="true" data-netlify-honeypot="bot-field" action="/thankyou.html">
+          <input type="hidden" name="form-name" value="photo-submission" />
           <input type="hidden" name="subject" value="Faces Found — New Photo Submission" />
-          <input type="hidden" name="redirect" value="https://facesfound.com/thankyou.html" />
+          <p style="display:none;"><input name="bot-field" /></p>
           <div class="form-grid">
 
             <div class="form-group">
@@ -144,8 +144,9 @@
           Even a partial clue can crack a case open. Tell us what you know.
         </p>
 
-        <form id="identify-form" action="https://formspree.io/f/mqevjypk" method="POST">
-          <input type="hidden" name="form-type" value="Photo Identification" />
+        <form id="identify-form" name="photo-identification" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/thankyou.html">
+          <input type="hidden" name="form-name" value="photo-identification" />
+          <p style="display:none;"><input name="bot-field" /></p>
 
             <div class="form-group">
               <label for="id-name">Your name</label>
