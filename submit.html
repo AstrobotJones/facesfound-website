@@ -57,7 +57,8 @@
           Fields marked * are required. The more detail you can provide, the better.
         </p>
 
-        <form id="contact-form">
+        <form id="contact-form" action="https://formspree.io/f/mqevjypk" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="form-type" value="New Photo Submission" />
           <div class="form-grid">
 
             <div class="form-group">
@@ -141,8 +142,8 @@
           Even a partial clue can crack a case open. Tell us what you know.
         </p>
 
-        <form id="identify-form">
-          <div class="form-grid">
+        <form id="identify-form" action="https://formspree.io/f/mqevjypk" method="POST">
+          <input type="hidden" name="form-type" value="Photo Identification" />
 
             <div class="form-group">
               <label for="id-name">Your name</label>
@@ -230,12 +231,10 @@
     // Handle identify form submission
     const identifyForm = document.getElementById('identify-form');
     if (identifyForm) {
-      identifyForm.addEventListener('submit', e => {
-        e.preventDefault();
+      identifyForm.addEventListener('submit', () => {
         const btn = identifyForm.querySelector('button[type="submit"]');
-        btn.textContent = 'Sent — thank you!';
+        btn.textContent = 'Sending...';
         btn.disabled = true;
-        identifyForm.reset();
       });
     }
   </script>

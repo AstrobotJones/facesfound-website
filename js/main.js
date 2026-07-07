@@ -81,14 +81,12 @@ photoCards.forEach(card => {
   });
 });
 
-// ── Contact form (placeholder handler) ─────────
+// ── Contact form (submit feedback) ─────────
 const contactForm = document.getElementById('contact-form');
 if (contactForm) {
-  contactForm.addEventListener('submit', e => {
-    e.preventDefault();
+  contactForm.addEventListener('submit', () => {
     const btn = contactForm.querySelector('button[type="submit"]');
-    btn.textContent = 'Sent — thank you!';
+    btn.textContent = 'Sending...';
     btn.disabled = true;
-    contactForm.reset();
   });
 }
