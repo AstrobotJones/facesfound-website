@@ -126,65 +126,9 @@
         Do you recognize anyone?
       </p>
 
-      <div class="gallery-grid" style="margin-top: 2.5rem;">
-
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1940s"
-          data-title="Woman in Sunday Best"
-          data-location="Unknown"
-          data-found="Ohio estate sale, 2024"
-          data-status="Unidentified"
-          data-category="portrait"
-          data-desc="A formally dressed woman, estimated mid-30s. Photo back reads only 'For Mother, with love.' Photographer stamp is partially legible — possibly a studio in the Midwest."
-          tabindex="0" role="button" aria-label="View photo: Woman in Sunday Best">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format&q=60" alt="Unidentified woman in formal dress, circa 1940s" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1940s</span>
-            <h3 class="photo-card__title">Woman in Sunday Best</h3>
-            <p class="photo-card__location">Found: Ohio estate sale</p>
-            <span class="photo-card__status status--unknown">Unidentified</span>
-          </div>
-        </div>
-
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1920s"
-          data-title="Family Portrait, Porch"
-          data-location="Southern US"
-          data-found="Tennessee antique mall, 2023"
-          data-status="Partially identified"
-          data-category="family"
-          data-desc="A family of five on a farmhouse porch. The older man has been tentatively identified as matching the Johnson family of rural Tennessee, but not confirmed. Three children unidentified."
-          tabindex="0" role="button" aria-label="View photo: Family Portrait, Porch">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=300&fit=crop&auto=format&q=60" alt="Family of five on a porch, circa 1920s" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1920s</span>
-            <h3 class="photo-card__title">Family Portrait, Porch</h3>
-            <p class="photo-card__location">Found: Tennessee antique mall</p>
-            <span class="photo-card__status status--identified">Partially identified</span>
-          </div>
-        </div>
-
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1955"
-          data-title="Young Woman, Studio Portrait"
-          data-location="Unknown"
-          data-found="Illinois flea market, 2024"
-          data-status="Unidentified"
-          data-category="portrait"
-          data-desc="Professional studio portrait. Subject appears to be late teens or early twenties. Handwritten on back: 'June 1955 — always yours.' No studio mark visible."
-          tabindex="0" role="button" aria-label="View photo: Young Woman, Studio Portrait">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=300&fit=crop&auto=format&q=60" alt="Young woman in studio portrait, circa 1955" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1955</span>
-            <h3 class="photo-card__title">Young Woman, Studio Portrait</h3>
-            <p class="photo-card__location">Found: Illinois flea market</p>
-            <span class="photo-card__status status--available">Copy available</span>
-          </div>
-        </div>
-
+      <!-- Populated dynamically from Google Sheet -->
+      <div class="gallery-grid" id="home-gallery" style="margin-top: 2.5rem;">
+        <p style="color:var(--warm-mid); font-size:0.9rem;">Loading recent photos...</p>
       </div>
 
       <div style="text-align:center; margin-top: 2.5rem;">
@@ -245,5 +189,97 @@
   </div>
 
   <script src="js/main.js"></script>
+  <script>
+  // Load the 3 most recent photos from the sheet for the homepage preview
+  const SHEET_ID_HOME = '1uvy6dwvbvhBQhMo19grAXfM4XjZqIpghVo6vN5NIIJI';
+  const HOME_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID_HOME}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+
+  function driveUrlHome(raw) {
+    if (!raw) return '';
+    if (raw.includes('drive.google.com/uc') || raw.includes('lh3.googleusercontent')) return raw;
+    const match = raw.match(/[-\w]{25,}/);
+    if (match) return `https://drive.google.com/uc?export=view&id=${match[0]}`;
+    return raw;
+  }
+
+  function statusClassHome(status) {
+    if (!status) return 'status--unknown';
+    const s = status.toLowerCase();
+    if (s.includes('partially')) return 'status--identified';
+    if (s.includes('identified')) return 'status--identified';
+    if (s.includes('available')) return 'status--available';
+    return 'status--unknown';
+  }
+
+  async function loadHomeGallery() {
+    const grid = document.getElementById('home-gallery');
+    if (!grid) return;
+    try {
+      const res  = await fetch(HOME_SHEET_URL);
+      const text = await res.text();
+      const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+      const rows = json.table.rows;
+
+      if (!rows || rows.length === 0) {
+        grid.innerHTML = '<p style="color:var(--warm-mid);">No photos yet — <a href="submit.html">be the first to submit one</a>.</p>';
+        return;
+      }
+
+      // Show the 3 most recent (last 3 rows)
+      const recent = rows.slice(-3).reverse();
+      grid.innerHTML = '';
+
+      recent.forEach(row => {
+        const photo = {
+          title:    row.c[1]?.v ?? 'Untitled',
+          era:      row.c[2]?.v ?? '',
+          found:    row.c[4]?.v ?? 'Unknown',
+          status:   row.c[5]?.v ?? 'Unidentified',
+          category: row.c[6]?.v ?? '',
+          desc:     row.c[7]?.v ?? '',
+          img:      driveUrlHome(row.c[8]?.v ?? ''),
+          location: row.c[3]?.v ?? 'Unknown',
+        };
+
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        card.setAttribute('tabindex','0');
+        card.setAttribute('role','button');
+        card.setAttribute('aria-label', `View photo: ${photo.title}`);
+        card.dataset.img      = photo.img;
+        card.dataset.era      = photo.era;
+        card.dataset.title    = photo.title;
+        card.dataset.location = photo.location;
+        card.dataset.found    = photo.found;
+        card.dataset.status   = photo.status;
+        card.dataset.desc     = photo.desc;
+
+        card.innerHTML = `
+          <img class="photo-card__img" src="${photo.img}" alt="${photo.title}" loading="lazy"
+               onerror="this.src='https://via.placeholder.com/400x300/f0e6d3/7a5c45?text=Photo+unavailable'" />
+          <div class="photo-card__meta">
+            <span class="photo-card__era">${photo.era}</span>
+            <h3 class="photo-card__title">${photo.title}</h3>
+            <p class="photo-card__location">Found: ${photo.found}</p>
+            <span class="photo-card__status ${statusClassHome(photo.status)}">${photo.status}</span>
+          </div>`;
+
+        card.addEventListener('click', () => openModal({
+          img: photo.img, era: photo.era, title: photo.title,
+          location: photo.location, found: photo.found,
+          status: photo.status, desc: photo.desc
+        }));
+
+        grid.appendChild(card);
+      });
+
+    } catch(err) {
+      console.error('Home gallery error:', err);
+      grid.innerHTML = '<p style="color:var(--warm-mid);">Could not load photos. Please refresh the page.</p>';
+    }
+  }
+
+  loadHomeGallery();
+  </script>
 </body>
 </html>

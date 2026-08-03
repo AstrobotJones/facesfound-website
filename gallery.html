@@ -32,6 +32,17 @@
   <section class="section">
     <div class="container">
 
+      <!-- Search bar -->
+      <div style="margin-bottom: 1rem;">
+        <input
+          type="search"
+          id="gallery-search"
+          placeholder="Search by title, location, era, description..."
+          style="width:100%; max-width:480px; font-size:0.95rem; padding:0.65rem 1rem; border:1px solid var(--dust); border-radius:2px; font-family:var(--font-body); background:var(--white); color:var(--ink);"
+          aria-label="Search photos"
+        />
+      </div>
+
       <!-- Filter bar -->
       <div class="filter-bar" role="group" aria-label="Filter photos">
         <button class="filter-btn active" data-filter="all">All Photos</button>
@@ -42,126 +53,21 @@
         <button class="filter-btn" data-filter="children">Children</button>
       </div>
 
-      <!-- Gallery grid -->
-      <div class="gallery-grid">
+      <!-- Status message -->
+      <p id="gallery-status" style="margin-top:1.5rem; color:var(--warm-mid); font-size:0.9rem;">
+        Loading collection...
+      </p>
 
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1940s"
-          data-title="Woman in Sunday Best"
-          data-location="Unknown"
-          data-found="Ohio estate sale, 2024"
-          data-status="Unidentified"
-          data-category="portrait"
-          data-desc="A formally dressed woman, estimated mid-30s. Photo back reads only 'For Mother, with love.' Photographer stamp is partially legible — possibly a studio in the Midwest."
-          tabindex="0" role="button" aria-label="View photo: Woman in Sunday Best">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format&q=60" alt="Unidentified woman in formal dress, circa 1940s" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1940s</span>
-            <h3 class="photo-card__title">Woman in Sunday Best</h3>
-            <p class="photo-card__location">Found: Ohio estate sale</p>
-            <span class="photo-card__status status--unknown">Unidentified</span>
-          </div>
-        </div>
+      <!-- Gallery grid — populated by JS -->
+      <div class="gallery-grid" id="gallery-grid"></div>
 
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1920s"
-          data-title="Family Portrait, Porch"
-          data-location="Southern US"
-          data-found="Tennessee antique mall, 2023"
-          data-status="Partially identified"
-          data-category="family"
-          data-desc="A family of five on a farmhouse porch. The older man has been tentatively identified as matching the Johnson family of rural Tennessee, but not confirmed. Three children unidentified."
-          tabindex="0" role="button" aria-label="View photo: Family Portrait, Porch">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=300&fit=crop&auto=format&q=60" alt="Family of five on a porch, circa 1920s" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1920s</span>
-            <h3 class="photo-card__title">Family Portrait, Porch</h3>
-            <p class="photo-card__location">Found: Tennessee antique mall</p>
-            <span class="photo-card__status status--identified">Partially identified</span>
-          </div>
-        </div>
+      <!-- Empty state -->
+      <div id="gallery-empty" style="display:none; text-align:center; padding:3rem 0; color:var(--warm-mid);">
+        <p style="font-size:1.1rem; margin-bottom:0.5rem;">No photos match your search.</p>
+        <p style="font-size:0.9rem;">Try a different filter or search term.</p>
+      </div>
 
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1955"
-          data-title="Young Woman, Studio Portrait"
-          data-location="Unknown"
-          data-found="Illinois flea market, 2024"
-          data-status="Unidentified"
-          data-category="portrait"
-          data-desc="Professional studio portrait. Subject appears to be late teens or early twenties. Handwritten on back: 'June 1955 — always yours.' No studio mark visible."
-          tabindex="0" role="button" aria-label="View photo: Young Woman, Studio Portrait">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=300&fit=crop&auto=format&q=60" alt="Young woman in studio portrait, circa 1955" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1955</span>
-            <h3 class="photo-card__title">Young Woman, Studio Portrait</h3>
-            <p class="photo-card__location">Found: Illinois flea market</p>
-            <span class="photo-card__status status--available">Copy available</span>
-          </div>
-        </div>
-
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1504198458649-3128b932f49e?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1918"
-          data-title="Soldier in Uniform"
-          data-location="Eastern US"
-          data-found="Pennsylvania estate sale, 2023"
-          data-status="Unidentified"
-          data-category="military"
-          data-desc="A young man in WWI-era uniform. Unit insignia partially visible on shoulder. Photographer's mark on reverse reads 'Becker Studios, Reading PA.' Estimated age 18–22."
-          tabindex="0" role="button" aria-label="View photo: Soldier in Uniform">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1504198458649-3128b932f49e?w=400&h=300&fit=crop&auto=format&q=60" alt="Young man in WWI era military uniform" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1918</span>
-            <h3 class="photo-card__title">Soldier in Uniform</h3>
-            <p class="photo-card__location">Found: Pennsylvania estate sale</p>
-            <span class="photo-card__status status--unknown">Unidentified</span>
-          </div>
-        </div>
-
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1962"
-          data-title="Wedding Day"
-          data-location="New England"
-          data-found="Vermont antique shop, 2024"
-          data-status="Unidentified"
-          data-category="wedding"
-          data-desc="A bride and groom on church steps. The church's architecture suggests New England. A crowd of well-wishers visible in the background. The groom's boutonniere is distinctive — white carnation with a blue ribbon."
-          tabindex="0" role="button" aria-label="View photo: Wedding Day">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=400&h=300&fit=crop&auto=format&q=60" alt="Bride and groom on church steps, circa 1962" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1962</span>
-            <h3 class="photo-card__title">Wedding Day</h3>
-            <p class="photo-card__location">Found: Vermont antique shop</p>
-            <span class="photo-card__status status--available">Copy available</span>
-          </div>
-        </div>
-
-        <div class="photo-card"
-          data-img="https://images.unsplash.com/photo-1570158268183-d296b2892211?w=600&h=450&fit=crop&auto=format&q=70"
-          data-era="c. 1935"
-          data-title="Three Children, Backyard"
-          data-location="Midwest US"
-          data-found="Indiana estate sale, 2023"
-          data-status="Unidentified"
-          data-category="children"
-          data-desc="Three children — two girls and a boy — playing in what appears to be a modest backyard. A garden is visible at the rear. The children are dressed in Depression-era clothing. Ages estimated 5, 7, and 10."
-          tabindex="0" role="button" aria-label="View photo: Three Children, Backyard">
-          <img class="photo-card__img" src="https://images.unsplash.com/photo-1570158268183-d296b2892211?w=400&h=300&fit=crop&auto=format&q=60" alt="Three children playing in a backyard, circa 1935" />
-          <div class="photo-card__meta">
-            <span class="photo-card__era">c. 1935</span>
-            <h3 class="photo-card__title">Three Children, Backyard</h3>
-            <p class="photo-card__location">Found: Indiana estate sale</p>
-            <span class="photo-card__status status--unknown">Unidentified</span>
-          </div>
-        </div>
-
-      </div><!-- /gallery-grid -->
-
-      <div style="text-align:center; margin-top:3rem; color: var(--warm-mid); font-size:0.9rem;">
+      <div style="text-align:center; margin-top:3rem; color:var(--warm-mid); font-size:0.9rem;">
         <p>More photographs are added regularly. <a href="submit.html">Submit one of your own →</a></p>
       </div>
 
@@ -193,6 +99,7 @@
     </div>
   </footer>
 
+  <!-- Photo Modal -->
   <div class="modal-overlay" id="photo-modal" role="dialog" aria-modal="true" aria-label="Photo detail">
     <div class="modal">
       <button class="modal__close" aria-label="Close">&times;</button>
@@ -207,11 +114,12 @@
       <p class="modal__desc"></p>
       <div class="modal__actions">
         <a href="submit.html" class="btn btn--primary">Submit information</a>
-        <button class="btn btn--dark" onclick="document.getElementById('photo-modal').classList.remove('open'); document.body.style.overflow='';">Close</button>
+        <button class="btn btn--dark" onclick="closeModal()">Close</button>
       </div>
     </div>
   </div>
 
   <script src="js/main.js"></script>
+  <script src="js/gallery.js"></script>
 </body>
 </html>
