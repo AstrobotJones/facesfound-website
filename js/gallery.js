@@ -7,7 +7,7 @@
 // H=description  I=image_url
 
 const SHEET_ID  = '1uvy6dwvbvhBQhMo19grAXfM4XjZqIpghVo6vN5NIIJI';
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1&headers=1`;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
