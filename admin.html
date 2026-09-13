@@ -282,7 +282,13 @@
 
     <div class="admin-header">
       <span class="admin-header__logo">Faces <span>Found</span> — Admin</span>
-      <span class="admin-header__meta" id="admin-meta">Loading...</span>
+      <div style="display:flex; align-items:center; gap:1.5rem;">
+        <span class="admin-header__meta" id="admin-meta">Loading...</span>
+        <button id="signout-btn" class="btn btn--outline"
+          style="font-size:0.78rem; padding:0.35rem 0.9rem; color:var(--dust); border-color:var(--warm-mid);">
+          Sign out
+        </button>
+      </div>
     </div>
 
     <div class="admin-body">
@@ -388,22 +394,67 @@
     const gateInput = document.getElementById('gate-password');
     const gateError = document.getElementById('gate-error');
 
-    // Check session on load
-    const SESSION_KEY = 'ff_admin_auth';
-    if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+    // ── Session management ───────────────────────────────────
+    const SESSION_KEY     = 'ff_admin_auth';
+    const LAST_ACTIVE_KEY = 'ff_admin_last_active';
+    const TIMEOUT_MS      = 10 * 60 * 1000; // 10 minutes
+    let timeoutTimer      = null;
+
+    function signOut(reason) {
+      sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(LAST_ACTIVE_KEY);
+      clearTimeout(timeoutTimer);
+      shellEl.style.display = 'none';
+      gateEl.style.display  = 'flex';
+      gateInput.value       = '';
+      gateError.style.display = 'block';
+      gateError.textContent = reason || 'Signed out.';
+    }
+
+    function resetTimer() {
+      clearTimeout(timeoutTimer);
+      sessionStorage.setItem(LAST_ACTIVE_KEY, Date.now());
+      timeoutTimer = setTimeout(() => {
+        signOut('Session timed out after 10 minutes of inactivity.');
+      }, TIMEOUT_MS);
+    }
+
+    function startSession() {
+      sessionStorage.setItem(SESSION_KEY, 'true');
+      resetTimer();
+      // Reset timer on any user interaction
+      ['click','keydown','mousemove','scroll'].forEach(evt =>
+        document.addEventListener(evt, resetTimer, { passive: true })
+      );
+    }
+
+    function checkSession() {
+      if (sessionStorage.getItem(SESSION_KEY) !== 'true') return false;
+      const lastActive = parseInt(sessionStorage.getItem(LAST_ACTIVE_KEY) || '0');
+      if (Date.now() - lastActive > TIMEOUT_MS) {
+        signOut('Session timed out after 10 minutes of inactivity.');
+        return false;
+      }
+      return true;
+    }
+
+    // Check existing session on load
+    if (checkSession()) {
       gateEl.style.display  = 'none';
       shellEl.style.display = 'block';
+      startSession();
       loadQueue();
     }
 
     function tryUnlock() {
       if (gateInput.value === ADMIN_PASSWORD) {
-        sessionStorage.setItem(SESSION_KEY, 'true');
+        startSession();
         gateEl.style.display  = 'none';
         shellEl.style.display = 'block';
         loadQueue();
       } else {
         gateError.style.display = 'block';
+        gateError.textContent   = 'Incorrect password. Please try again.';
         gateInput.value = '';
         gateInput.focus();
       }
@@ -411,6 +462,11 @@
 
     gateBtn.addEventListener('click', tryUnlock);
     gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+    // Sign out button
+    document.getElementById('signout-btn').addEventListener('click', () => {
+      signOut('You have been signed out.');
+    });
 
     // ── State ─────────────────────────────────────────────────
     let queue       = [];   // all pending submissions
