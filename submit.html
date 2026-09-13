@@ -3,9 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Submit an orphaned photograph to the Faces Found collection — help us identify and preserve real people from history." />
+  <meta name="description" content="Submit an orphaned photograph to the Faces Found collection." />
   <title>Submit a Photo — Faces Found</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .upload-zone {
+      border: 2px dashed var(--dust);
+      background: var(--white);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      border-radius: 2px;
+    }
+    .upload-zone:hover,
+    .upload-zone.dragover { border-color: var(--accent); background: var(--aged-paper); }
+    .upload-zone__icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .upload-zone__label { font-size: 0.9rem; color: var(--warm-mid); }
+    .upload-zone__label strong { color: var(--accent); }
+    .upload-preview {
+      display: flex; flex-wrap: wrap; gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .upload-preview__item {
+      position: relative; width: 90px; height: 90px;
+    }
+    .upload-preview__item img {
+      width: 100%; height: 100%; object-fit: cover;
+      border: 2px solid var(--dust);
+    }
+    .upload-preview__remove {
+      position: absolute; top: -6px; right: -6px;
+      background: var(--accent); color: white;
+      border: none; border-radius: 50%;
+      width: 20px; height: 20px;
+      font-size: 0.7rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .progress-bar {
+      height: 6px; background: var(--dust);
+      border-radius: 3px; overflow: hidden;
+      margin-top: 1rem; display: none;
+    }
+    .progress-bar__fill {
+      height: 100%; background: var(--accent);
+      width: 0%; transition: width 0.3s;
+    }
+    .form-message {
+      padding: 1rem 1.25rem;
+      border-radius: 2px;
+      margin-top: 1.5rem;
+      display: none;
+      font-size: 0.9rem;
+    }
+    .form-message--error {
+      background: #fdf0ed; color: var(--accent);
+      border-left: 3px solid var(--accent);
+    }
+    .form-message--success {
+      background: #e8f3e8; color: #3a6b3a;
+      border-left: 3px solid #3a6b3a;
+    }
+  </style>
 </head>
 <body>
 
@@ -33,151 +92,192 @@
     <div class="container" style="max-width: 800px;">
 
       <!-- Tips box -->
-      <div style="background: var(--aged-paper); border-left: 3px solid var(--accent); padding: 1.25rem 1.5rem; margin-bottom: 3rem;">
-        <p style="font-family: var(--font-display); color: var(--sepia); font-size: 1.05rem; margin-bottom: 0.5rem;">Tips for a great submission</p>
-        <ul style="color: var(--warm-mid); font-size: 0.9rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem;">
-          <li>Photograph both the <strong>front and back</strong> of the original — writing, stamps, and studio marks on the back are often the best clues.</li>
+      <div style="background:var(--aged-paper); border-left:3px solid var(--accent); padding:1.25rem 1.5rem; margin-bottom:3rem;">
+        <p style="font-family:var(--font-display); color:var(--sepia); font-size:1.05rem; margin-bottom:0.5rem;">Tips for a great submission</p>
+        <ul style="color:var(--warm-mid); font-size:0.9rem; padding-left:1.25rem; display:flex; flex-direction:column; gap:0.4rem;">
+          <li>Photograph both the <strong>front and back</strong> of the original — writing and studio marks on the back are often the best clues.</li>
           <li>Scan or photograph in good, even light. Avoid shadows across the subject's face.</li>
-          <li>Note exactly <strong>where and when</strong> you found the photograph — this is more useful than you might think.</li>
-          <li>Include any text on the photo or its envelope, exactly as written, even if partial.</li>
+          <li>Note exactly <strong>where and when</strong> you found the photograph.</li>
+          <li>Include any text on the photo, exactly as written, even if partial.</li>
         </ul>
       </div>
 
-      <!-- Two forms: submit a photo, or submit identification info -->
-      <div style="display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
-        <button class="btn btn--primary" id="tab-submit" onclick="showTab('submit')">Submit a new photo</button>
-        <button class="btn btn--outline" id="tab-identify" onclick="showTab('identify')" style="color: var(--warm-mid);">I have information about an existing photo</button>
+      <!-- Tab switcher -->
+      <div style="display:flex; gap:1rem; margin-bottom:2.5rem; flex-wrap:wrap;">
+        <button class="btn btn--primary" id="tab-submit"   onclick="showTab('submit')">Submit a new photo</button>
+        <button class="btn btn--outline" id="tab-identify" onclick="showTab('identify')" style="color:var(--warm-mid);">I have information about an existing photo</button>
       </div>
 
-      <!-- Submit new photo form -->
+      <!-- ── SUBMIT NEW PHOTO FORM ── -->
       <div id="form-submit">
         <p class="section__label">New submission</p>
-        <h2 class="section__title" style="font-size: 1.75rem;">Tell us about your photo</h2>
-        <p style="color: var(--warm-mid); margin-bottom: 0.5rem; font-size: 0.9rem;">
-          Fields marked * are required. The more detail you can provide, the better.
+        <h2 class="section__title" style="font-size:1.75rem;">Tell us about your photo</h2>
+        <p style="color:var(--warm-mid); margin-bottom:1.5rem; font-size:0.9rem;">
+          Fields marked * are required. The more detail you provide, the better.
         </p>
 
-        <form id="contact-form" name="photo-submission" method="POST" enctype="multipart/form-data" data-netlify="true" data-netlify-honeypot="bot-field" action="/thankyou.html">
-          <input type="hidden" name="form-name" value="photo-submission" />
-          <input type="hidden" name="subject" value="Faces Found — New Photo Submission" />
-          <p style="display:none;"><input name="bot-field" /></p>
-          <div class="form-grid">
+        <div class="form-grid">
 
-            <div class="form-group">
-              <label for="name">Your name *</label>
-              <input type="text" id="name" name="name" required placeholder="First and last name" />
-            </div>
-
-            <div class="form-group">
-              <label for="email">Your email *</label>
-              <input type="email" id="email" name="email" required placeholder="you@example.com" />
-            </div>
-
-            <div class="form-group form-group--full">
-              <label for="found-where">Where was the photo found? *</label>
-              <input type="text" id="found-where" name="found-where" required placeholder="e.g. Estate sale in Columbus, Ohio" />
-            </div>
-
-            <div class="form-group">
-              <label for="found-when">Approximately when found?</label>
-              <input type="text" id="found-when" name="found-when" placeholder="e.g. Spring 2024" />
-            </div>
-
-            <div class="form-group">
-              <label for="era">Estimated era of the photo</label>
-              <select id="era" name="era">
-                <option value="">— Select if known —</option>
-                <option>Pre-1900</option>
-                <option>1900–1919</option>
-                <option>1920s</option>
-                <option>1930s</option>
-                <option>1940s</option>
-                <option>1950s</option>
-                <option>1960s</option>
-                <option>1970s</option>
-                <option>1980s or later</option>
-                <option>Unknown</option>
-              </select>
-            </div>
-
-            <div class="form-group form-group--full">
-              <label for="back-text">Text on the back of the photo (copy exactly, typos and all)</label>
-              <textarea id="back-text" name="back-text" placeholder="e.g. 'For Mother, always — Christmas 1943' or 'Becker Studios, Reading PA'"></textarea>
-            </div>
-
-            <div class="form-group form-group--full">
-              <label for="description">Describe what you see in the photo *</label>
-              <textarea id="description" name="description" required style="min-height: 140px;" placeholder="Number of people, approximate ages, clothing, setting, anything notable..."></textarea>
-            </div>
-
-            <div class="form-group form-group--full">
-              <label for="photo-file">Attach your photo file(s)</label>
-              <input type="file" id="photo-file" name="photo-file" accept="image/*" multiple
-                style="padding: 0.5rem; background: var(--aged-paper); border-color: var(--dust);" />
-              <span style="font-size: 0.78rem; color: var(--warm-mid);">JPG, PNG, or TIFF. Include front and back if possible.</span>
-            </div>
-
-            <div class="form-group form-group--full">
-              <label for="notes">Anything else you want us to know?</label>
-              <textarea id="notes" name="notes" placeholder="Additional context, theories, or anything else that might help..."></textarea>
-            </div>
-
+          <div class="form-group">
+            <label for="sub-name">Your name *</label>
+            <input type="text" id="sub-name" required placeholder="First and last name" />
           </div>
 
-          <div style="margin-top: 2rem;">
-            <button type="submit" class="btn btn--primary" style="font-size: 1rem; padding: 0.9rem 2.5rem;">
-              Submit photo
-            </button>
-            <p style="margin-top: 1rem; font-size: 0.82rem; color: var(--warm-mid);">
-              By submitting, you confirm you are the holder of the original photograph
-              and agree to our community guidelines. We'll be in touch within a few days.
-            </p>
+          <div class="form-group">
+            <label for="sub-email">Your email *</label>
+            <input type="email" id="sub-email" required placeholder="you@example.com" />
           </div>
-        </form>
-      </div>
 
-      <!-- Identify existing photo form -->
-      <div id="form-identify" style="display: none;">
+          <div class="form-group form-group--full">
+            <label for="sub-title">Photo title *
+              <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--warm-mid); font-size:0.8rem;">
+                — a short descriptive name, e.g. "Woman in Sunday Best"
+              </span>
+            </label>
+            <input type="text" id="sub-title" required placeholder="e.g. Young Man in Military Uniform" />
+          </div>
+
+          <div class="form-group form-group--full">
+            <label for="sub-found-where">Where was the photo found? *</label>
+            <input type="text" id="sub-found-where" required placeholder="e.g. Estate sale in Columbus, Ohio" />
+          </div>
+
+          <div class="form-group">
+            <label for="sub-found-when">Approximately when found?</label>
+            <input type="text" id="sub-found-when" placeholder="e.g. Spring 2024" />
+          </div>
+
+          <div class="form-group">
+            <label for="sub-era">Estimated era</label>
+            <select id="sub-era">
+              <option value="">— Select if known —</option>
+              <option>Pre-1900</option>
+              <option>1900–1919</option>
+              <option>1920s</option>
+              <option>1930s</option>
+              <option>1940s</option>
+              <option>1950s</option>
+              <option>1960s</option>
+              <option>1970s</option>
+              <option>1980s or later</option>
+              <option>Unknown</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sub-category">Photo type</label>
+            <select id="sub-category">
+              <option value="">— Select if known —</option>
+              <option value="portrait">Portrait</option>
+              <option value="family">Family group</option>
+              <option value="military">Military</option>
+              <option value="wedding">Wedding</option>
+              <option value="children">Children</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sub-location">Subject's apparent location</label>
+            <input type="text" id="sub-location" placeholder="e.g. Rural Midwest, New England" />
+          </div>
+
+          <div class="form-group form-group--full">
+            <label for="sub-back-text">Text on the back (copy exactly, typos and all)</label>
+            <textarea id="sub-back-text" placeholder="e.g. 'For Mother, always — Christmas 1943'"></textarea>
+          </div>
+
+          <div class="form-group form-group--full">
+            <label for="sub-description">Describe what you see *</label>
+            <textarea id="sub-description" required style="min-height:140px;"
+              placeholder="Number of people, approximate ages, clothing, setting, anything notable..."></textarea>
+          </div>
+
+          <!-- File upload zone -->
+          <div class="form-group form-group--full">
+            <label>Photo file(s) *
+              <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--warm-mid); font-size:0.8rem;">
+                — include front and back if possible
+              </span>
+            </label>
+            <div class="upload-zone" id="upload-zone">
+              <div class="upload-zone__icon">📷</div>
+              <p class="upload-zone__label">
+                <strong>Click to choose files</strong> or drag and drop here<br>
+                JPG, PNG, TIFF — up to 10MB per file
+              </p>
+              <input type="file" id="sub-files" accept="image/*" multiple
+                style="display:none;" />
+            </div>
+            <div class="upload-preview" id="upload-preview"></div>
+            <div class="progress-bar" id="progress-bar">
+              <div class="progress-bar__fill" id="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="form-group form-group--full">
+            <label for="sub-notes">Anything else we should know?</label>
+            <textarea id="sub-notes"
+              placeholder="Additional context, theories, or anything that might help..."></textarea>
+          </div>
+
+        </div><!-- /form-grid -->
+
+        <div class="form-message form-message--error" id="submit-error"></div>
+        <div class="form-message form-message--success" id="submit-success"></div>
+
+        <div style="margin-top:2rem;">
+          <button id="submit-btn" class="btn btn--primary" style="font-size:1rem; padding:0.9rem 2.5rem;">
+            Submit photo
+          </button>
+          <p style="margin-top:1rem; font-size:0.82rem; color:var(--warm-mid);">
+            By submitting, you confirm you are the holder of this photograph
+            and agree to our community guidelines.
+          </p>
+        </div>
+      </div><!-- /form-submit -->
+
+      <!-- ── IDENTIFY EXISTING PHOTO FORM ── -->
+      <div id="form-identify" style="display:none;">
         <p class="section__label">Share what you know</p>
-        <h2 class="section__title" style="font-size: 1.75rem;">I recognize someone</h2>
-        <p style="color: var(--warm-mid); margin-bottom: 0.5rem; font-size: 0.9rem;">
+        <h2 class="section__title" style="font-size:1.75rem;">I recognize someone</h2>
+        <p style="color:var(--warm-mid); margin-bottom:1.5rem; font-size:0.9rem;">
           Even a partial clue can crack a case open. Tell us what you know.
         </p>
 
-        <form id="identify-form" name="photo-identification" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/thankyou.html">
-          <input type="hidden" name="form-name" value="photo-identification" />
-          <p style="display:none;"><input name="bot-field" /></p>
+        <form id="identify-form"
+          action="https://formspree.io/f/mqevjypk"
+          method="POST">
+          <input type="hidden" name="form-type" value="Photo Identification" />
 
+          <div class="form-grid">
             <div class="form-group">
               <label for="id-name">Your name</label>
               <input type="text" id="id-name" name="name" placeholder="Optional" />
             </div>
-
             <div class="form-group">
               <label for="id-email">Your email *</label>
               <input type="email" id="id-email" name="email" required placeholder="So we can follow up" />
             </div>
-
             <div class="form-group form-group--full">
               <label for="photo-ref">Which photo are you writing about? *</label>
-              <input type="text" id="photo-ref" name="photo-ref" required placeholder="Photo title or description — e.g. 'Woman in Sunday Best, c. 1940s'" />
+              <input type="text" id="photo-ref" name="photo-ref" required
+                placeholder="Photo title or description — e.g. 'Woman in Sunday Best, c. 1940s'" />
             </div>
-
             <div class="form-group form-group--full">
               <label for="id-info">What do you know? *</label>
-              <textarea id="id-info" name="id-info" required style="min-height: 160px;"
-                placeholder="Share any identification, clues, or theories. Be as specific as you can — names, locations, family connections, dates..."></textarea>
+              <textarea id="id-info" name="id-info" required style="min-height:160px;"
+                placeholder="Names, locations, family connections, dates — be as specific as you can..."></textarea>
             </div>
-
           </div>
 
-          <div style="margin-top: 2rem;">
-            <button type="submit" class="btn btn--primary" style="font-size: 1rem; padding: 0.9rem 2.5rem;">
+          <div style="margin-top:2rem;">
+            <button type="submit" class="btn btn--primary" style="font-size:1rem; padding:0.9rem 2.5rem;">
               Send information
             </button>
           </div>
         </form>
-      </div>
+      </div><!-- /form-identify -->
 
     </div>
   </section>
@@ -208,13 +308,15 @@
   </footer>
 
   <script src="js/main.js"></script>
-  <script>
-    function showTab(tab) {
+  <script type="module">
+    import { supabase } from './js/supabase-client.js';
+
+    // ── Tab switcher ──────────────────────────────────────────
+    window.showTab = function(tab) {
       const submitForm   = document.getElementById('form-submit');
       const identifyForm = document.getElementById('form-identify');
       const tabSubmit    = document.getElementById('tab-submit');
       const tabIdentify  = document.getElementById('tab-identify');
-
       if (tab === 'submit') {
         submitForm.style.display   = 'block';
         identifyForm.style.display = 'none';
@@ -229,9 +331,174 @@
         tabIdentify.className = 'btn btn--primary';
         tabIdentify.style.color = '';
       }
+    };
+
+    // ── File upload zone ──────────────────────────────────────
+    const uploadZone    = document.getElementById('upload-zone');
+    const fileInput     = document.getElementById('sub-files');
+    const uploadPreview = document.getElementById('upload-preview');
+    let selectedFiles   = [];
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+
+    uploadZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      addFiles(Array.from(e.dataTransfer.files));
+    });
+
+    fileInput.addEventListener('change', () => {
+      addFiles(Array.from(fileInput.files));
+      fileInput.value = '';
+    });
+
+    function addFiles(files) {
+      const imageFiles = files.filter(f => f.type.startsWith('image/'));
+      selectedFiles = [...selectedFiles, ...imageFiles];
+      renderPreviews();
     }
 
-    // Handle identify form submission
+    function renderPreviews() {
+      uploadPreview.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const item = document.createElement('div');
+          item.className = 'upload-preview__item';
+          item.innerHTML = `
+            <img src="${e.target.result}" alt="Preview" />
+            <button class="upload-preview__remove" data-index="${index}" aria-label="Remove">&times;</button>`;
+          item.querySelector('.upload-preview__remove').addEventListener('click', () => {
+            selectedFiles.splice(index, 1);
+            renderPreviews();
+          });
+          uploadPreview.appendChild(item);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ── Form submission ───────────────────────────────────────
+    const submitBtn     = document.getElementById('submit-btn');
+    const progressBar   = document.getElementById('progress-bar');
+    const progressFill  = document.getElementById('progress-fill');
+    const errorMsg      = document.getElementById('submit-error');
+    const successMsg    = document.getElementById('submit-success');
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+      successMsg.style.display = 'none';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit photo';
+    }
+
+    function setProgress(pct) {
+      progressBar.style.display = 'block';
+      progressFill.style.width  = pct + '%';
+    }
+
+    submitBtn.addEventListener('click', async () => {
+      errorMsg.style.display  = 'none';
+      successMsg.style.display = 'none';
+
+      // Basic validation
+      const title       = document.getElementById('sub-title').value.trim();
+      const name        = document.getElementById('sub-name').value.trim();
+      const email       = document.getElementById('sub-email').value.trim();
+      const foundWhere  = document.getElementById('sub-found-where').value.trim();
+      const description = document.getElementById('sub-description').value.trim();
+
+      if (!title || !name || !email || !foundWhere || !description) {
+        return showError('Please fill in all required fields (marked with *).');
+      }
+      if (selectedFiles.length === 0) {
+        return showError('Please attach at least one photo file.');
+      }
+
+      submitBtn.disabled    = true;
+      submitBtn.textContent = 'Uploading...';
+      setProgress(10);
+
+      try {
+        // ── 1. Upload image files to Supabase Storage ─────────
+        const uploadedPaths = [];
+        const timestamp     = Date.now();
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const file      = selectedFiles[i];
+          const ext       = file.name.split('.').pop();
+          const safeName  = `${timestamp}-${i}.${ext}`;
+          const path      = `pending/${safeName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('photos')
+            .upload(path, file, { upsert: false });
+
+          if (uploadError) throw new Error(`File upload failed: ${uploadError.message}`);
+          uploadedPaths.push(path);
+          setProgress(10 + Math.round(((i + 1) / selectedFiles.length) * 60));
+        }
+
+        setProgress(75);
+        submitBtn.textContent = 'Saving...';
+
+        // ── 2. Insert row into photos table ───────────────────
+        const { error: insertError } = await supabase
+          .from('photos')
+          .insert({
+            title:        title,
+            era:          document.getElementById('sub-era').value          || null,
+            category:     document.getElementById('sub-category').value     || null,
+            location:     document.getElementById('sub-location').value.trim() || null,
+            found_where:  foundWhere,
+            found_when:   document.getElementById('sub-found-when').value.trim() || null,
+            back_text:    document.getElementById('sub-back-text').value.trim()  || null,
+            description:  description,
+            image_front:  uploadedPaths[0]  || null,
+            image_back:   uploadedPaths[1]  || null,
+            is_approved:  false,
+            is_removed:   false,
+            // Store submitter contact info in description suffix for admin reference
+            // (until user accounts are fully wired)
+          });
+
+        if (insertError) throw new Error(`Submission failed: ${insertError.message}`);
+
+        // ── 3. Also store submitter contact for admin reference ─
+        // We append it to a separate note since we don't have a
+        // submitter_contact column yet — admin sees it in Supabase
+        // We'll add a proper contacts table in Phase 2
+        await supabase.from('photos').update({
+          description: description +
+            `\n\n[Submitted by: ${name} <${email}>` +
+            (document.getElementById('sub-notes').value.trim()
+              ? '\nNotes: ' + document.getElementById('sub-notes').value.trim()
+              : '') + ']'
+        }).eq('image_front', uploadedPaths[0]);
+
+        setProgress(100);
+
+        // ── 4. Redirect to thank-you page ─────────────────────
+        window.location.href = '/thankyou.html';
+
+      } catch (err) {
+        console.error('Submission error:', err);
+        showError(err.message || 'Something went wrong. Please try again.');
+        progressBar.style.display = 'none';
+      }
+    });
+
+    // ── Identify form ─────────────────────────────────────────
     const identifyForm = document.getElementById('identify-form');
     if (identifyForm) {
       identifyForm.addEventListener('submit', () => {
