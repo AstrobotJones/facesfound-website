@@ -494,13 +494,14 @@
         }
 
         listEl.innerHTML = '';
-        queue.forEach(photo => {
+        // Render queue items — async to resolve signed URLs
+        for (const photo of queue) {
           const li = document.createElement('li');
           li.className = 'queue-item';
           li.dataset.id = photo.id;
 
           const thumbUrl = photo.image_front
-            ? getStorageUrl(photo.image_front)
+            ? await getStorageUrl(photo.image_front)
             : 'https://via.placeholder.com/48x48/f0e6d3/7a5c45?text=?';
 
           li.innerHTML = `
@@ -513,7 +514,7 @@
 
           li.addEventListener('click', () => selectPhoto(photo.id));
           listEl.appendChild(li);
-        });
+        }
 
       } catch (err) {
         console.error('Queue load error:', err);
@@ -523,7 +524,7 @@
     }
 
     // ── Select a photo for review ─────────────────────────────
-    function selectPhoto(id) {
+    async function selectPhoto(id) {
       currentId = id;
       const photo = queue.find(p => p.id === id);
       if (!photo) return;
@@ -537,12 +538,18 @@
       document.getElementById('review-placeholder').style.display = 'none';
       document.getElementById('review-content').style.display = 'block';
 
-      // Photo previews
+      // Photo previews — await signed URLs
       const photosEl = document.getElementById('review-photos');
+      photosEl.innerHTML = '<p style="color:var(--dust); font-size:0.8rem; align-self:center; padding:1rem;">Loading image...</p>';
+
+      const paths = [photo.image_front, photo.image_back].filter(Boolean);
+      const urls  = await Promise.all(paths.map(p => getStorageUrl(p)));
+
       photosEl.innerHTML = '';
-      [photo.image_front, photo.image_back].filter(Boolean).forEach(path => {
+      urls.forEach((url, i) => {
+        if (!url) return;
         const img = document.createElement('img');
-        img.src = getStorageUrl(path);
+        img.src = url;
         img.alt = photo.title || 'Submitted photo';
         img.onerror = () => { img.style.display = 'none'; };
         photosEl.appendChild(img);
@@ -672,12 +679,22 @@
       return approvedPath;
     }
 
-    // ── Get public storage URL ────────────────────────────────
-    function getStorageUrl(path) {
+    // ── Get storage URL ───────────────────────────────────────
+    // approved/ → public URL (fast, permanent)
+    // pending/  → signed URL (authenticated, 1hr expiry)
+    async function getStorageUrl(path) {
       if (!path) return '';
       if (path.startsWith('http')) return path;
-      const { data } = supabase.storage.from('photos').getPublicUrl(path);
-      return data?.publicUrl || '';
+      if (path.startsWith('approved/')) {
+        const { data } = supabase.storage.from('photos').getPublicUrl(path);
+        return data?.publicUrl || '';
+      }
+      // pending/ needs a signed URL
+      const { data, error } = await supabase.storage
+        .from('photos')
+        .createSignedUrl(path, 3600); // 1 hour expiry
+      if (error) { console.warn('Signed URL error:', error); return ''; }
+      return data?.signedUrl || '';
     }
 
     // ── Queue helpers ─────────────────────────────────────────
