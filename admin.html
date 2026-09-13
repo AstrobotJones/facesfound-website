@@ -388,8 +388,17 @@
     const gateInput = document.getElementById('gate-password');
     const gateError = document.getElementById('gate-error');
 
+    // Check session on load
+    const SESSION_KEY = 'ff_admin_auth';
+    if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+      gateEl.style.display  = 'none';
+      shellEl.style.display = 'block';
+      loadQueue();
+    }
+
     function tryUnlock() {
       if (gateInput.value === ADMIN_PASSWORD) {
+        sessionStorage.setItem(SESSION_KEY, 'true');
         gateEl.style.display  = 'none';
         shellEl.style.display = 'block';
         loadQueue();
@@ -415,11 +424,7 @@
 
       try {
         const { data, error } = await supabase
-          .from('photos')
-          .select('*')
-          .eq('is_approved', false)
-          .eq('is_removed',  false)
-          .order('created_at', { ascending: true });
+          .rpc('get_pending_photos');
 
         if (error) throw error;
 
@@ -542,18 +547,16 @@
 
         // 2. Update the database row
         const { error } = await supabase
-          .from('photos')
-          .update({
-            is_approved:  true,
-            title:        document.getElementById('edit-title').value.trim(),
-            era:          document.getElementById('edit-era').value        || null,
-            category:     document.getElementById('edit-category').value   || null,
-            location:     document.getElementById('edit-location').value.trim() || null,
-            description:  document.getElementById('edit-description').value.trim(),
-            image_front:  newFrontPath,
-            image_back:   newBackPath  || null,
-          })
-          .eq('id', currentId);
+          .rpc('admin_approve_photo', {
+            photo_id:        currentId,
+            new_title:       document.getElementById('edit-title').value.trim(),
+            new_era:         document.getElementById('edit-era').value        || null,
+            new_category:    document.getElementById('edit-category').value   || null,
+            new_location:    document.getElementById('edit-location').value.trim() || null,
+            new_description: document.getElementById('edit-description').value.trim(),
+            new_front_path:  newFrontPath,
+            new_back_path:   newBackPath || null,
+          });
 
         if (error) throw error;
 
@@ -576,9 +579,7 @@
 
       try {
         const { error } = await supabase
-          .from('photos')
-          .update({ is_removed: true })
-          .eq('id', currentId);
+          .rpc('admin_reject_photo', { photo_id: currentId });
 
         if (error) throw error;
 
