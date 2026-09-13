@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Faces Found</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: var(--aged-paper); }
+
+    /* ── Password gate ── */
+    .gate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .gate__box {
+      background: var(--white);
+      padding: 2.5rem;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(28,21,16,0.12);
+    }
+    .gate__title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--sepia);
+      margin-bottom: 0.4rem;
+    }
+    .gate__sub {
+      font-size: 0.85rem;
+      color: var(--warm-mid);
+      margin-bottom: 1.5rem;
+    }
+    .gate__error {
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    /* ── Admin shell ── */
+    .admin-shell { display: none; min-height: 100vh; }
+
+    .admin-header {
+      background: var(--ink);
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .admin-header__logo {
+      font-family: var(--font-display);
+      color: var(--aged-paper);
+      font-size: 1.1rem;
+    }
+    .admin-header__logo span { color: var(--accent-light); font-style: italic; }
+    .admin-header__meta {
+      font-size: 0.8rem;
+      color: var(--dust);
+    }
+
+    .admin-body {
+      max-width: 980px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── Queue panel ── */
+    .queue-panel {
+      background: var(--white);
+      box-shadow: 0 2px 12px rgba(28,21,16,0.08);
+    }
+    .queue-panel__header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--aged-paper);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .queue-panel__title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--sepia);
+    }
+    .queue-panel__count {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      background: #fdf0ed;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .queue-list { list-style: none; max-height: 520px; overflow-y: auto; }
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--aged-paper);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .queue-item:hover { background: var(--ivory); }
+    .queue-item.active { background: var(--aged-paper); }
+    .queue-item__thumb {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      filter: sepia(20%);
+      flex-shrink: 0;
+      background: var(--aged-paper);
+    }
+    .queue-item__info { flex: 1; min-width: 0; }
+    .queue-item__title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      color: var(--sepia);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .queue-item__meta {
+      font-size: 0.75rem;
+      color: var(--warm-mid);
+      margin-top: 2px;
+    }
+
+    .queue-empty {
+      padding: 2rem 1.25rem;
+      text-align: center;
+      color: var(--warm-mid);
+      font-size: 0.9rem;
+    }
+
+    /* ── Review panel ── */
+    .review-panel {
+      background: var(--white);
+      box-shadow: 0 2px 12px rgba(28,21,16,0.08);
+    }
+    .review-panel__placeholder {
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--warm-mid);
+    }
+    .review-panel__placeholder p { font-size: 0.9rem; margin-top: 0.5rem; }
+
+    .review-content { display: none; }
+
+    .review-photos {
+      display: flex;
+      gap: 0.75rem;
+      padding: 1.25rem;
+      background: var(--ink);
+      overflow-x: auto;
+    }
+    .review-photos img {
+      height: 220px;
+      width: auto;
+      object-fit: contain;
+      filter: sepia(15%);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .review-photos img:hover { border-color: var(--accent-light); }
+
+    .review-fields { padding: 1.5rem; }
+
+    .review-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem 1.5rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--aged-paper);
+      font-size: 0.82rem;
+    }
+    .review-meta__item strong {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--warm-mid);
+      margin-bottom: 1px;
+    }
+    .review-meta__item span { color: var(--sepia); }
+
+    .review-fields label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--sepia);
+      display: block;
+      margin-bottom: 0.3rem;
+      margin-top: 1rem;
+    }
+    .review-fields label:first-child { margin-top: 0; }
+
+    .review-actions {
+      display: flex;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--aged-paper);
+      background: var(--ivory);
+    }
+
+    .btn--approve {
+      background: #3a6b3a;
+      color: var(--white);
+      flex: 1;
+    }
+    .btn--approve:hover { background: #2d542d; color: var(--white); text-decoration: none; }
+    .btn--approve:disabled { background: var(--dust); cursor: not-allowed; }
+
+    .btn--reject {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .btn--reject:hover { background: var(--accent); color: var(--white); text-decoration: none; }
+    .btn--reject:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .action-message {
+      font-size: 0.82rem;
+      padding: 0.5rem 0;
+      color: var(--warm-mid);
+      align-self: center;
+      display: none;
+    }
+
+    /* ── Loading spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid var(--dust);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .admin-body { grid-template-columns: 1fr; }
+      .queue-list { max-height: 260px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Password gate ── -->
+  <div class="gate" id="gate">
+    <div class="gate__box">
+      <p class="gate__title">Faces Found</p>
+      <p class="gate__sub">Admin access only. Enter your password to continue.</p>
+      <div class="form-group">
+        <label for="gate-password">Password</label>
+        <input type="password" id="gate-password" autocomplete="current-password"
+          style="width:100%;" placeholder="Enter admin password" />
+      </div>
+      <div style="margin-top:1rem;">
+        <button class="btn btn--primary" style="width:100%;" id="gate-btn">
+          Sign in
+        </button>
+      </div>
+      <p class="gate__error" id="gate-error">Incorrect password. Please try again.</p>
+    </div>
+  </div>
+
+  <!-- ── Admin shell ── -->
+  <div class="admin-shell" id="admin-shell">
+
+    <div class="admin-header">
+      <span class="admin-header__logo">Faces <span>Found</span> — Admin</span>
+      <span class="admin-header__meta" id="admin-meta">Loading...</span>
+    </div>
+
+    <div class="admin-body">
+
+      <!-- Queue panel -->
+      <div class="queue-panel">
+        <div class="queue-panel__header">
+          <span class="queue-panel__title">Pending submissions</span>
+          <span class="queue-panel__count" id="queue-count">—</span>
+        </div>
+        <ul class="queue-list" id="queue-list">
+          <li class="queue-empty">Loading submissions...</li>
+        </ul>
+      </div>
+
+      <!-- Review panel -->
+      <div class="review-panel">
+
+        <div class="review-panel__placeholder" id="review-placeholder">
+          <p style="font-size:2rem;">👈</p>
+          <p>Select a submission from the queue to review it.</p>
+        </div>
+
+        <div class="review-content" id="review-content">
+
+          <!-- Photo previews -->
+          <div class="review-photos" id="review-photos"></div>
+
+          <!-- Read-only submission metadata -->
+          <div class="review-fields">
+            <p style="font-family:var(--font-mono); font-size:0.7rem; color:var(--accent);
+               letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem;">
+              Submitted details
+            </p>
+            <div class="review-meta" id="review-meta"></div>
+
+            <!-- Editable fields -->
+            <p style="font-family:var(--font-mono); font-size:0.7rem; color:var(--accent);
+               letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.5rem; margin-top:1.5rem;">
+              Edit before publishing
+            </p>
+
+            <label for="edit-title">Title</label>
+            <input type="text" id="edit-title" style="width:100%;" />
+
+            <label for="edit-era">Era</label>
+            <select id="edit-era" style="width:100%;">
+              <option value="">— Unknown —</option>
+              <option>Pre-1900</option>
+              <option>1900–1919</option>
+              <option>1920s</option>
+              <option>1930s</option>
+              <option>1940s</option>
+              <option>1950s</option>
+              <option>1960s</option>
+              <option>1970s</option>
+              <option>1980s or later</option>
+              <option>Unknown</option>
+            </select>
+
+            <label for="edit-category">Category</label>
+            <select id="edit-category" style="width:100%;">
+              <option value="">— Select —</option>
+              <option value="portrait">Portrait</option>
+              <option value="family">Family group</option>
+              <option value="military">Military</option>
+              <option value="wedding">Wedding</option>
+              <option value="children">Children</option>
+              <option value="other">Other</option>
+            </select>
+
+            <label for="edit-location">Subject's location</label>
+            <input type="text" id="edit-location" style="width:100%;"
+              placeholder="e.g. Rural Midwest, New England" />
+
+            <label for="edit-description">Description</label>
+            <textarea id="edit-description" style="width:100%; min-height:120px;"></textarea>
+
+          </div><!-- /review-fields -->
+
+          <!-- Actions -->
+          <div class="review-actions">
+            <button class="btn btn--approve" id="btn-approve">✓ Approve &amp; publish</button>
+            <button class="btn btn--reject"  id="btn-reject">✗ Reject</button>
+            <span class="action-message" id="action-message"></span>
+          </div>
+
+        </div><!-- /review-content -->
+      </div><!-- /review-panel -->
+
+    </div><!-- /admin-body -->
+  </div><!-- /admin-shell -->
+
+  <script type="module">
+    import { supabase } from './js/supabase-client.js';
+
+    // ── Password gate ─────────────────────────────────────────
+    const ADMIN_PASSWORD = 'PuuE9EMD!mRu@mHm';
+
+    const gateEl    = document.getElementById('gate');
+    const shellEl   = document.getElementById('admin-shell');
+    const gateBtn   = document.getElementById('gate-btn');
+    const gateInput = document.getElementById('gate-password');
+    const gateError = document.getElementById('gate-error');
+
+    function tryUnlock() {
+      if (gateInput.value === ADMIN_PASSWORD) {
+        gateEl.style.display  = 'none';
+        shellEl.style.display = 'block';
+        loadQueue();
+      } else {
+        gateError.style.display = 'block';
+        gateInput.value = '';
+        gateInput.focus();
+      }
+    }
+
+    gateBtn.addEventListener('click', tryUnlock);
+    gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+
+    // ── State ─────────────────────────────────────────────────
+    let queue       = [];   // all pending submissions
+    let currentId   = null; // currently selected photo id
+
+    // ── Load pending queue ────────────────────────────────────
+    async function loadQueue() {
+      const metaEl = document.getElementById('admin-meta');
+      const listEl = document.getElementById('queue-list');
+      const countEl = document.getElementById('queue-count');
+
+      try {
+        const { data, error } = await supabase
+          .from('photos')
+          .select('*')
+          .eq('is_approved', false)
+          .eq('is_removed',  false)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        queue = data || [];
+        countEl.textContent = queue.length;
+        metaEl.textContent  = `${queue.length} pending submission${queue.length !== 1 ? 's' : ''}`;
+
+        if (queue.length === 0) {
+          listEl.innerHTML = '<li class="queue-empty">No pending submissions. All caught up! 🎉</li>';
+          return;
+        }
+
+        listEl.innerHTML = '';
+        queue.forEach(photo => {
+          const li = document.createElement('li');
+          li.className = 'queue-item';
+          li.dataset.id = photo.id;
+
+          const thumbUrl = photo.image_front
+            ? getStorageUrl(photo.image_front)
+            : 'https://via.placeholder.com/48x48/f0e6d3/7a5c45?text=?';
+
+          li.innerHTML = `
+            <img class="queue-item__thumb" src="${thumbUrl}" alt=""
+                 onerror="this.src='https://via.placeholder.com/48x48/f0e6d3/7a5c45?text=?'" />
+            <div class="queue-item__info">
+              <div class="queue-item__title">${photo.title || 'Untitled'}</div>
+              <div class="queue-item__meta">${photo.found_where || 'Location unknown'} · ${formatDate(photo.created_at)}</div>
+            </div>`;
+
+          li.addEventListener('click', () => selectPhoto(photo.id));
+          listEl.appendChild(li);
+        });
+
+      } catch (err) {
+        console.error('Queue load error:', err);
+        metaEl.textContent = 'Error loading queue';
+        listEl.innerHTML = `<li class="queue-empty">Could not load submissions.<br>${err.message}</li>`;
+      }
+    }
+
+    // ── Select a photo for review ─────────────────────────────
+    function selectPhoto(id) {
+      currentId = id;
+      const photo = queue.find(p => p.id === id);
+      if (!photo) return;
+
+      // Highlight active queue item
+      document.querySelectorAll('.queue-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.id == id);
+      });
+
+      // Show review panel
+      document.getElementById('review-placeholder').style.display = 'none';
+      document.getElementById('review-content').style.display = 'block';
+
+      // Photo previews
+      const photosEl = document.getElementById('review-photos');
+      photosEl.innerHTML = '';
+      [photo.image_front, photo.image_back].filter(Boolean).forEach(path => {
+        const img = document.createElement('img');
+        img.src = getStorageUrl(path);
+        img.alt = photo.title || 'Submitted photo';
+        img.onerror = () => { img.style.display = 'none'; };
+        photosEl.appendChild(img);
+      });
+
+      // Read-only metadata
+      const metaEl = document.getElementById('review-meta');
+      metaEl.innerHTML = metaRow('Submitted', formatDate(photo.created_at))
+        + metaRow('Found where', photo.found_where)
+        + metaRow('Found when',  photo.found_when)
+        + metaRow('Back text',   photo.back_text)
+        + metaRow('Submitter',   extractSubmitter(photo.description));
+
+      // Editable fields — pre-populated from submission
+      document.getElementById('edit-title').value       = photo.title       || '';
+      document.getElementById('edit-location').value    = photo.location    || '';
+      document.getElementById('edit-description').value = cleanDescription(photo.description);
+
+      // Era select
+      const eraEl = document.getElementById('edit-era');
+      eraEl.value = photo.era || '';
+      if (!eraEl.value && photo.era) {
+        // era value not in list — add it
+        const opt = document.createElement('option');
+        opt.value = photo.era;
+        opt.textContent = photo.era;
+        eraEl.appendChild(opt);
+        eraEl.value = photo.era;
+      }
+
+      // Category select
+      const catEl = document.getElementById('edit-category');
+      catEl.value = photo.category || '';
+
+      // Reset action buttons
+      resetActions();
+    }
+
+    // ── Approve ───────────────────────────────────────────────
+    document.getElementById('btn-approve').addEventListener('click', async () => {
+      if (!currentId) return;
+      const photo = queue.find(p => p.id === currentId);
+      if (!photo) return;
+
+      setActionsLoading('Approving...');
+
+      try {
+        // 1. Move image file from pending/ to approved/ in Storage
+        let newFrontPath = photo.image_front;
+        let newBackPath  = photo.image_back;
+
+        if (photo.image_front?.startsWith('pending/')) {
+          newFrontPath = await moveFile(photo.image_front);
+        }
+        if (photo.image_back?.startsWith('pending/')) {
+          newBackPath = await moveFile(photo.image_back);
+        }
+
+        // 2. Update the database row
+        const { error } = await supabase
+          .from('photos')
+          .update({
+            is_approved:  true,
+            title:        document.getElementById('edit-title').value.trim(),
+            era:          document.getElementById('edit-era').value        || null,
+            category:     document.getElementById('edit-category').value   || null,
+            location:     document.getElementById('edit-location').value.trim() || null,
+            description:  document.getElementById('edit-description').value.trim(),
+            image_front:  newFrontPath,
+            image_back:   newBackPath  || null,
+          })
+          .eq('id', currentId);
+
+        if (error) throw error;
+
+        showActionMessage('✓ Published to gallery', '#3a6b3a');
+        removeFromQueue(currentId);
+
+      } catch (err) {
+        console.error('Approve error:', err);
+        showActionMessage('Error: ' + err.message, 'var(--accent)');
+        resetActions();
+      }
+    });
+
+    // ── Reject ────────────────────────────────────────────────
+    document.getElementById('btn-reject').addEventListener('click', async () => {
+      if (!currentId) return;
+      if (!confirm('Reject this submission? It will be hidden permanently.')) return;
+
+      setActionsLoading('Rejecting...');
+
+      try {
+        const { error } = await supabase
+          .from('photos')
+          .update({ is_removed: true })
+          .eq('id', currentId);
+
+        if (error) throw error;
+
+        showActionMessage('Submission rejected', 'var(--warm-mid)');
+        removeFromQueue(currentId);
+
+      } catch (err) {
+        console.error('Reject error:', err);
+        showActionMessage('Error: ' + err.message, 'var(--accent)');
+        resetActions();
+      }
+    });
+
+    // ── Move file in Supabase Storage ─────────────────────────
+    async function moveFile(pendingPath) {
+      const filename    = pendingPath.replace('pending/', '');
+      const approvedPath = `approved/${filename}`;
+
+      // Download from pending
+      const { data: fileData, error: dlError } = await supabase.storage
+        .from('photos')
+        .download(pendingPath);
+      if (dlError) throw new Error(`Download failed: ${dlError.message}`);
+
+      // Upload to approved
+      const { error: ulError } = await supabase.storage
+        .from('photos')
+        .upload(approvedPath, fileData, { upsert: true });
+      if (ulError) throw new Error(`Upload failed: ${ulError.message}`);
+
+      // Delete from pending
+      await supabase.storage.from('photos').remove([pendingPath]);
+
+      return approvedPath;
+    }
+
+    // ── Get public storage URL ────────────────────────────────
+    function getStorageUrl(path) {
+      if (!path) return '';
+      if (path.startsWith('http')) return path;
+      const { data } = supabase.storage.from('photos').getPublicUrl(path);
+      return data?.publicUrl || '';
+    }
+
+    // ── Queue helpers ─────────────────────────────────────────
+    function removeFromQueue(id) {
+      queue = queue.filter(p => p.id !== id);
+      document.querySelector(`.queue-item[data-id="${id}"]`)?.remove();
+      document.getElementById('queue-count').textContent = queue.length;
+      document.getElementById('admin-meta').textContent =
+        `${queue.length} pending submission${queue.length !== 1 ? 's' : ''}`;
+
+      // Select next item if available
+      if (queue.length > 0) {
+        selectPhoto(queue[0].id);
+      } else {
+        document.getElementById('review-content').style.display = 'none';
+        document.getElementById('review-placeholder').style.display = 'block';
+        document.getElementById('review-placeholder').innerHTML =
+          '<p style="font-size:2rem;">🎉</p><p>All submissions reviewed. Queue is empty.</p>';
+        document.getElementById('queue-list').innerHTML =
+          '<li class="queue-empty">No pending submissions. All caught up! 🎉</li>';
+      }
+    }
+
+    // ── UI helpers ────────────────────────────────────────────
+    function metaRow(label, value) {
+      if (!value) return '';
+      return `<div class="review-meta__item">
+        <strong>${label}</strong>
+        <span>${value}</span>
+      </div>`;
+    }
+
+    function extractSubmitter(desc) {
+      if (!desc) return null;
+      const match = desc.match(/\[Submitted by: ([^\]]+)\]/);
+      return match ? match[1] : null;
+    }
+
+    function cleanDescription(desc) {
+      if (!desc) return '';
+      return desc.replace(/\n?\n?\[Submitted by:[\s\S]*?\]/, '').trim();
+    }
+
+    function formatDate(iso) {
+      if (!iso) return 'Unknown';
+      return new Date(iso).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric'
+      });
+    }
+
+    function setActionsLoading(msg) {
+      const approveBtn = document.getElementById('btn-approve');
+      const rejectBtn  = document.getElementById('btn-reject');
+      approveBtn.disabled = true;
+      rejectBtn.disabled  = true;
+      approveBtn.innerHTML = `<span class="spinner"></span>${msg}`;
+    }
+
+    function resetActions() {
+      const approveBtn = document.getElementById('btn-approve');
+      const rejectBtn  = document.getElementById('btn-reject');
+      approveBtn.disabled = false;
+      rejectBtn.disabled  = false;
+      approveBtn.innerHTML = '✓ Approve &amp; publish';
+    }
+
+    function showActionMessage(msg, color) {
+      const el = document.getElementById('action-message');
+      el.textContent     = msg;
+      el.style.color     = color;
+      el.style.display   = 'block';
+      const approveBtn   = document.getElementById('btn-approve');
+      const rejectBtn    = document.getElementById('btn-reject');
+      approveBtn.disabled = true;
+      rejectBtn.disabled  = true;
+    }
+  </script>
+</body>
+</html>
